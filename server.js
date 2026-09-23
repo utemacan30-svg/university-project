@@ -32,6 +32,12 @@ app.post("/upload", (req, res) => {
 
 app.use(express.static(__dirname));
 
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
-});
+if (!process.env.VERCEL) {
+    app.listen(PORT, () => {
+        console.log(`Server running at http://localhost:${PORT}`);
+    });
+}
+
+module.exports = app;
+   
+
